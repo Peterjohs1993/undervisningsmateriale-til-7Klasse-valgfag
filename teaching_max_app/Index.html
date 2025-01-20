@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#000000">
+    <meta name="rnbo-version" content="1.0.0-alpha.5">
+    <link rel="stylesheet" href="style/newStyle.css">
+    <title>Sequencer & Mixer</title>
+</head>
+
+<body>
+<div id="main-content" class="rounded">
+    <h1 id="main-title">Sequencer & mixer</h1>
+    <h2 id="sub-title">introduktion til elektronisk musik</h2>
+
+<div id="transport" class="row">
+    <div class="coloumn">
+        <label for="tempo-text">Tempo</label>
+        <input 
+            type="text" 
+            id="tempo-text" 
+            min="40" 
+            max="210" 
+            value="90"
+            step="1">
+    </div>
+    <div class="coloumn">
+        <label for="tempo-toggle">Start</label>
+        <input type="checkbox" id="tempo-toggle">
+    </div>
+</div>
+<div id="drum-seq">
+    <h3 id="Tromme-Triggers">Percussion</h3>
+    <div id="drum-trigger">
+        <div class="card">
+            <div class="card-content">
+                <div class="grid">
+                    <div class="header-row" id="header-row"></div>
+                    <div class="matrix-container">
+                        <div class="row-labels" id="row-labels"></div>
+                        <div class="matrix-grid" id="matrix-grid"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <script>
+            const ROWS = 3;
+            const COLS = 16;
+            const ROW_LABELS = ['Kick', 'Snare', 'Hihat']; // Labels for each row
+    
+
+            function getRowState(rowIndex) {
+                const states = [];
+                for (let col = 0; col < COLS; col++) {
+                    const cell = document.getElementById(`matrix-cell-${rowIndex}-${col}`);
+                    states.push(cell.classList.contains('active') ? 1 : 0);
+                }
+                return states;
+        }
+
+            // Create column labels
+            function createHeaders() {
+                const headerRow = document.getElementById('header-row');
+                for (let i = 0; i < COLS; i++) {
+                    const patternPosition = i % 4;
+                    const groupNumber = Math.floor(i / 4) + 1;
+                    
+                    const label = document.createElement('div');
+                    label.className = 'header-cell';
+                    
+                    switch(patternPosition) {
+                        case 0: label.textContent = `${groupNumber}`; break;
+                        case 1: label.textContent = 'så'; break;
+                        case 2: label.textContent = 'og'; break;
+                        case 3: label.textContent = 'så'; break;
+                    }
+                    
+                    headerRow.appendChild(label);
+                }
+            }
+    
+            // Create row labels
+            function createRowLabels() {
+                const rowLabels = document.getElementById('row-labels');
+                for (let i = 0; i < ROWS; i++) {
+                    const label = document.createElement('div');
+                    label.className = 'row-label';
+                    label.textContent = ROW_LABELS[i];
+                    rowLabels.appendChild(label);
+                }
+            }
+    
+            // Create matrix grid
+            function createMatrix() {
+                const matrixGrid = document.getElementById('matrix-grid');
+                for (let row = 0; row < ROWS; row++) {
+                    const rowDiv = document.createElement('div');
+                    rowDiv.className = 'matrix-row';
+                    
+                    for (let col = 0; col < COLS; col++) {
+                        const cell = document.createElement('button');
+                        cell.className = 'matrix-cell';
+                        cell.id = "matrix-cell-" + row + "-" + col;
+                        cell.setAttribute('data-row', ROW_LABELS[row]);
+                        cell.setAttribute('data-col', col + 1);
+                        cell.onclick = function() {
+                        this.classList.toggle('active');
+                        // Log the state of each row when any cell is clicked
+                        ROW_LABELS.forEach((label, index) => {
+                            var rowData = getRowState(index);
+    
+                            var valueList = [0, 0.0625, 0.125, 0.1875, 0.25, 0.3125, 0.375, 0.4375, 0.5, 0.5625, 0.625, 0.6875, 0.75, 0.8125, 0.875, 0.9375];
+
+                                function list() {
+                                    var controlList = rowData;
+                                    var result = [];
+                                    
+                                    // Check if all values are 0
+                                    var allZeros = controlList.every(value => value === 0);
+                                    
+                                    if(allZeros) {
+                                        window[label] = "bang";
+                                        return;
+                                    }
+                                    
+                                    // If not all zeros, proceed with normal filtering
+                                    for(var i = 0; i < controlList.length; i++) {
+                                        if(controlList[i] === 1) {
+                                            result.push(valueList[i]);
+                                        }
+                                        window[label] = result;
+                                    }
+                                    
+                                    
+                                }
+                            list();
+
+                            
+                        });
+                        
+                    }
+                        rowDiv.appendChild(cell);
+                    }
+                    
+                    matrixGrid.appendChild(rowDiv);
+                }
+            }
+    
+            // Initialize the grid
+            createHeaders();
+            createRowLabels();
+            createMatrix();
+        </script>
+
+    </div>
+</div>
+
+<div class="spacer">
+</div>
+
+<div id="bass">
+    <h3 id="bas-seq">Bas/Melodi</h3>
+    <div id="bass-pitch" class="rotate">
+        <div class="coloumn">
+            <input type="range"
+            id="pitch-slider-1"
+            min="0.0"
+            max="1.0"
+            value="0.0"
+            step="0.1"
+            class="seq-slider">
+            <input type="range"
+            id="pitch-slider-2"
+            min="0.0"
+            max="1.0"
+            value="0.0"
+            step="0.1"
+            class="seq-slider">
+            <input type="range"
+            id="pitch-slider-3"
+            min="0.0"
+            max="1.0"
+            value="0.0"
+            step="0.1"
+            class="seq-slider">
+            <input type="range"
+            id="pitch-slider-4"
+            min="0.0"
+            max="1.0"
+            value="0.0"
+            step="0.1"
+            class="seq-slider">
+            <input type="range"
+            id="pitch-slider-5"
+            min="0.0"
+            max="1.0"
+            value="0.0"
+            step="0.1"
+            class="seq-slider">
+            <input type="range"
+            id="pitch-slider-6"
+            min="0.0"
+            max="1.0"
+            value="0.0"
+            step="0.1"
+            class="seq-slider">
+            <input type="range"
+            id="pitch-slider-7"
+            min="0.0"
+            max="1.0"
+            value="0.0"
+            step="0.1"
+            class="seq-slider">
+            <input type="range"
+            id="pitch-slider-8"
+            min="0.0"
+            max="1.0"
+            value="0.0"
+            step="0.1"
+            class="seq-slider">
+            <input type="range"
+            id="pitch-slider-9"
+            min="0.0"
+            max="1.0"
+            value="0.0"
+            step="0.1"
+            class="seq-slider">
+            <input type="range"
+            id="pitch-slider-10"
+            min="0.0"
+            max="1.0"
+            value="0.0"
+            step="0.1"
+            class="seq-slider">
+            <input type="range"
+            id="pitch-slider-11"
+            min="0.0"
+            max="1.0"
+            value="0.0"
+            step="0.1"
+            class="seq-slider">
+            <input type="range"
+            id="pitch-slider-12"
+            min="0.0"
+            max="1.0"
+            value="0.0"
+            step="0.1"
+            class="seq-slider">
+            <input type="range"
+            id="pitch-slider-13"
+            min="0.0"
+            max="1.0"
+            value="0.0"
+            step="0.1"
+            class="seq-slider">
+            <input type="range"
+            id="pitch-slider-14"
+            min="0.0"
+            max="1.0"
+            value="0.0"
+            step="0.1"
+            class="seq-slider">
+            <input type="range"
+            id="pitch-slider-15"
+            min="0.0"
+            max="1.0"
+            value="0.0"
+            step="0.1"
+            class="seq-slider">
+            <input type="range"
+            id="pitch-slider-16"
+            min="0.0"
+            max="1.0"
+            value="0.0"
+            step="0.1"
+            class="seq-slider">
+        </div>
+    </div>
+        <div id="bass-trigger">
+            <div class="card">
+                <div class="card-content">
+                    <div class="grid">
+                        <div class="header-row" id="bass-header-row"></div>
+                        <div class="matrix-container">
+                            <div class="row-labels" id="bass-row-labels"></div>
+                            <div class="matrix-grid" id="bass-matrix-grid"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Add this script after the existing drum matrix script -->
+        <script>
+          // Constants for bass sequencer
+const BASS_ROWS = 1;
+const BASS_COLS = 16;
+const BASS_ROW_LABELS = ['Trigger'];
+
+// Initialize window state array
+window.sequencerState = new Array(BASS_COLS).fill(0);
+
+// Create column labels for bass
+function createBassHeaders() {
+    const headerRow = document.getElementById('bass-header-row');
+    for (let i = 0; i < BASS_COLS; i++) {
+        const patternPosition = i % 4;
+        const groupNumber = Math.floor(i / 4) + 1;
+        
+        const label = document.createElement('div');
+        label.className = 'header-cell';
+        
+        switch(patternPosition) {
+            case 0: label.textContent = `${groupNumber}`; break;
+            case 1: label.textContent = 'så'; break;
+            case 2: label.textContent = 'og'; break;
+            case 3: label.textContent = 'så'; break;
+        }
+        
+        headerRow.appendChild(label);
+    }
+}
+
+// Create row labels for bass
+function createBassRowLabels() {
+    const rowLabels = document.getElementById('bass-row-labels');
+    for (let i = 0; i < BASS_ROWS; i++) {
+        const label = document.createElement('div');
+        label.className = 'row-label';
+        label.textContent = BASS_ROW_LABELS[i];
+        rowLabels.appendChild(label);
+    }
+}
+
+// Create matrix grid for bass
+function createBassMatrix() {
+    const matrixGrid = document.getElementById('bass-matrix-grid');
+    for (let row = 0; row < BASS_ROWS; row++) {
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'matrix-row';
+        
+        for (let col = 0; col < BASS_COLS; col++) {
+            const cell = document.createElement('button');
+            cell.className = 'matrix-cell';
+            cell.setAttribute('data-row', BASS_ROW_LABELS[row]);
+            cell.setAttribute('data-col', col);
+            cell.onclick = function() {
+                this.classList.toggle('active');
+                // Update state array directly based on column index
+                window.sequencerState[col] = this.classList.contains('active') ? 1 : 0;
+            };
+            rowDiv.appendChild(cell);
+        }
+        
+        matrixGrid.appendChild(rowDiv);
+    }
+}
+
+// Initialize the bass grid
+createBassHeaders();
+createBassRowLabels();
+createBassMatrix();
+        </script>
+        
+    <div class="synth-ctrl">
+        <div class="cutoff">
+            <h4 class="cutoff">Cutoff</h4>
+            <input 
+            type="range" 
+            id="cutCtrl"
+            class="filter"
+            min="120"
+            max="18000"
+            value="2500">
+            
+        </div>
+        <div class="res">
+            <h4 class="res">Resonans</h4>
+            <input 
+            type="range" 
+            id="resCtrl"
+            class="filter"
+            min="0.0"
+            max="0.95"
+            value="0.0"
+            step="0.01">
+        </div>
+        <div class="env">
+            <div class="envText">
+                <h4 class="envTextHeadings">Attack</h4>
+                <h4 id="envR"class="envTextHeadings">Release</h4>
+            </div>
+            <div class="envSliders">
+                <input 
+                    type="range" 
+                    id="atk"
+                    class="envSlider"
+                    min="5.0"
+                    max="300.0"
+                    value="10.0"
+                    step="0.01">
+                <input 
+                    type="range" 
+                    id="rel"
+                    class="envSlider"
+                    min="5.0"
+                    max="2000.0"
+                    value="150.0"
+                    step="0.01">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="spacer">
+</div>
+<div class="lyde-header">
+    <h3 id="lyde">Lyde & Stemning</h3>
+</div>
+<div class="lyde">
+    
+    <div class="lyde-menu" id="lyd1">
+        <button id="toggle1" class="toggle-button inactive">Start/Stop</button>
+        <button id="toggle3" class="toggle-button inactive">Loop</button>
+
+        <input 
+        type="range" 
+        id="speed1"
+        class="rate" 
+        min="-2.0" 
+        max="2.0" 
+        value="1.0" 
+        step="0.01">
+      
+        
+    </div>
+    <div class="lyde-menu" id="lyd2">
+        <button id="toggle2" class="toggle-button inactive">Start/Stop</button>
+        <button id="toggle4" class="toggle-button inactive">Loop</button>
+
+        <input 
+        type="range"
+        id="speed2"
+        class="rate" 
+        min="-2.0" 
+        max="2.0" 
+        value="1.0" 
+        step="0.01">
+      
+        
+    </div>
+    
+</div>
+
+
+<div class="spacer">
+
+</div>
+
+<div id="mixer" class="row">
+    <h3 id="mixerText">Mixer</h3>
+    <div class="sub-mixer">
+        <div class="rotate-mixer">
+            <input 
+            type="range" 
+            id="kick-fader"
+            min="0"
+            max="158"
+            value="0"
+            step="1"
+            class="mixer-slider"
+            >
+        </div>
+        <div class="rotate-mixer">
+            <input 
+            type="range" 
+            id="Snare-fader"
+            min="0"
+            max="158"
+            value="0"
+            step="1"
+            class="mixer-slider"
+            >
+        </div>
+        <div class="rotate-mixer">
+            <input 
+            type="range" 
+            id="hihat-fader"
+            min="0"
+            max="158"
+            value="0"
+            step="1"
+            class="mixer-slider"
+            >
+        </div>
+        <div class="rotate-mixer">
+            <input 
+            type="range" 
+            id="bass-fader"
+            min="0"
+            max="158"
+            value="0"
+            step="1"
+            class="mixer-slider"
+            >
+        </div>
+        <div class="rotate-mixer">
+            <input 
+            type="range" 
+            id="lyd1-fader"
+            min="0"
+            max="158"
+            value="0"
+            step="1"
+            class="mixer-slider"
+            >
+        </div>
+        <div class="rotate-mixer">
+            <input 
+            type="range" 
+            id="lyd2-fader"
+            min="0"
+            max="158"
+            value="0"
+            step="1"
+            class="mixer-slider"
+            >
+        </div>
+    </div>
+    <div class="mixer-labels-container">
+    <h4 id="mixer-label-kick">Kick</h4>
+    <h4 id="mixer-label-snare">Snare</h4>
+    <h4 id="mixer-label-hihat">Hihat</h4>
+    <h4 id="mixer-label-bas">Bas/Melodi</h4>
+    <h4 id="mixer-label-lyd1">Lyd 1</h4>
+    <h4 id="mixer-label-lyd2">Lyd 2</h4>
+    </div>
+
+</div>
+<div class="upload">
+    <h3 class="uploadText">
+        Brug dine egne lyde!
+    </h3>
+    <div class="recordCont">
+    <div class="optag1">
+        <button id="toggle6" class="toggle-button inactive">Kick</button>
+        <button id="toggle7" class="toggle-button inactive">lyd 1</button>
+    </div>
+    <div class="optag2">
+        <button id="toggle8" class="toggle-button inactive">Snare</button>
+        <button id="toggle9" class="toggle-button inactive">lyd 2</button>
+    </div>
+    <div class="optag3">
+        <button id="toggle10" class="toggle-button inactive">Hihat</button>
+    </div>
+</div>
+</div>
+<div class="record">
+    <h3 class="recordtext">
+        Optag dit arbejde!
+    </h3>
+    <div class="recordBut">
+        <button id="toggle5" class="toggle-button inactive">Optag</button>
+    </div>
+</div>
+</div>
+    
+    <!-- (Optional) The guardrails.js script isn't required for RNBO to work, and you can skip including it -->
+    <!-- It simply offers some helpful error messages for common problems -->
+    <script type="text/javascript" src="js/guardrails.js"></script>
+
+    <!-- Import RNBO Engine Wrapper -->
+    <!-- Make sure to include the RNBO engine version to the version of your exported code, found in rnbopackage.json -->
+    <script type="text/javascript" src="js/seq_app.js"></script>
+</body>
+</html>

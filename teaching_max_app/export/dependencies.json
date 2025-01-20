@@ -1,0 +1,22 @@
+[
+  {
+    "id": "percLyd_1",
+    "file": "media\\kick_Short.wav"
+  },
+  {
+    "id": "percLyd_3",
+    "file": "media\\hihat_birdman.wav"
+  },
+  {
+    "id": "percLyd_2",
+    "file": "media\\snare_birdman.wav"
+  },
+  {
+    "id": "ambience_2",
+    "file": "media\\Violin_Mendell.wav"
+  },
+  {
+    "id": "ambience_1",
+    "file": "media\\ambience.wav"
+  }
+]
